@@ -57,18 +57,7 @@ npm install
 4. Deploy the Next.js app to Webflow Cloud
 5. Note your Webflow Cloud deployment URL (e.g., `https://your-api-site.webflow.io`)
 
-**Option B: Vercel (Alternative)**
-
-1. Create a Vercel account and project
-2. Add environment variable in Vercel Dashboard:
-   - Key: `WEBFLOW_API_TOKEN`
-   - Value: Your Webflow API token
-   - Mark as "Encrypted"
-3. Deploy to Vercel:
-   ```bash
-   vercel deploy
-   ```
-4. Note your Vercel deployment URL (e.g., `https://your-app.vercel.app`)
+**Note**: The API backend must be deployed to Webflow Cloud. The component is designed to work with Webflow Cloud's Next.js hosting.
 
 ### 3. Share Component to Webflow
 
@@ -95,8 +84,8 @@ npm install
 3. Drag component onto canvas
 4. In Properties panel, configure:
    - **Site ID**: Your Webflow site ID (required)
-   - **API Endpoint**: Your Webflow Cloud or Vercel URL (e.g., `https://your-api-site.webflow.io/api/webflow-proxy`)
-   - **API Token**: Direct API token (development/testing only - not recommended)
+   - **API Endpoint**: Your Webflow Cloud API URL (e.g., `https://your-api-site.webflow.io/api/webflow-proxy`)
+   - **Theme**: Light or Dark mode (default: Dark)
    - **Default State**: Optional default state selection
    - **Locale**: Date formatting locale (default: en-US)
 
@@ -105,26 +94,31 @@ npm install
 ```
 Calendar/
 ├── pages/
-│   └── api/
-│       └── webflow-proxy.js  # Next.js API route (Webflow Cloud)
-├── api/
-│   └── webflow-proxy/
-│       └── index.js          # Vercel serverless function (legacy/alternative)
+│   ├── api/
+│   │   └── webflow-proxy.js  # Next.js API route (Webflow Cloud)
+│   ├── _app.js               # Next.js app entry point
+│   └── index.js              # Next.js landing page
 ├── src/
 │   ├── Calendar.tsx          # React component
-│   └── Calendar.webflow.tsx  # Webflow component definition
+│   ├── Calendar.webflow.tsx  # Webflow component definition
+│   ├── CustomDropdown.tsx    # Custom dropdown component
+│   ├── main.tsx              # Local testing entry point
+│   └── mock-data.ts          # Mock data for testing
 ├── webflow-api.js            # Webflow API client
 ├── api-proxy.js              # Backend proxy client
 ├── collection-detector.js    # Collection detection logic
 ├── data-processor.js         # Data normalization
 ├── calculations.js           # Calculation engine
 ├── date-utils.js            # Date utility functions
+├── calendar-component.jsx    # Calendar component wrapper
 ├── calendar-ui.jsx           # Calendar UI component
 ├── styles.css                # Component styles
 ├── package.json             # Dependencies
 ├── next.config.js           # Next.js configuration
 ├── webflow.json             # Webflow configuration
-├── vercel.json              # Vercel configuration (optional)
+├── open-next.config.ts      # OpenNext config for Webflow Cloud
+├── wrangler.jsonc           # Wrangler config for local testing
+├── cloudflare-env.d.ts      # Cloudflare type definitions
 └── README.md                # This file
 ```
 
@@ -136,11 +130,10 @@ Calendar/
 {
   // Required
   siteId: string,              // Webflow site ID
-  apiEndpoint: string,         // Webflow Cloud or Vercel backend URL (recommended)
-  // OR
-  apiToken: string,            // Direct API token (dev only - not secure)
+  apiEndpoint: string,         // Webflow Cloud backend URL
 
   // Optional
+  theme: 'light' | 'dark',    // Theme mode (default: 'dark')
   defaultState: string,        // Default state ID or name
   locale: string,             // Date locale (default: 'en-US')
 }
@@ -148,9 +141,8 @@ Calendar/
 
 ## Security
 
-- **Production**: Use Webflow Cloud or Vercel backend proxy (tokens never exposed to client)
-- **Development**: Direct API calls with `apiToken` prop (tokens visible in component settings - not secure)
-- **API Token**: Always stored server-side in environment variables, never in component props
+- **API Token**: Always stored server-side in Webflow Cloud environment variables, never exposed to the client
+- **Backend Proxy**: All API requests go through the Next.js API route on Webflow Cloud, which securely handles authentication
 
 ## API Endpoints Used
 
@@ -182,14 +174,13 @@ Selected dates excluding:
 - Check that the collection is published
 
 ### "Network error: Unable to reach backend proxy"
-- Verify your Webflow Cloud or Vercel deployment is live
+- Verify your Webflow Cloud deployment is live
 - Check that `apiEndpoint` prop is set correctly (include `/api/webflow-proxy` path)
-- Verify CORS is configured in `next.config.js` or `vercel.json`
+- Verify CORS is configured in `next.config.js`
 
 ### "API token not configured"
-- Ensure `WEBFLOW_API_TOKEN` is set in Webflow Cloud or Vercel environment variables
-- For Webflow Cloud: Set in project settings → Environment Variables
-- For Vercel: Set in project settings → Environment Variables
+- Ensure `WEBFLOW_API_TOKEN` is set in Webflow Cloud environment variables
+- Set in Webflow Cloud dashboard → Project Settings → Environment Variables
 - Redeploy after adding environment variables
 
 ### Component not appearing in Webflow
