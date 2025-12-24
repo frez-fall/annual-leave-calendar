@@ -1,0 +1,13 @@
+{
+  "library": {
+    "name": "Interactive annual leave calendar",
+    "components": [
+      "./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)"
+    ],
+    "description": "calendar leave planner",
+    "id": "interactive-annual-leave-calendar"
+  },
+  "cloud": {
+    "framework": "nextjs"
+  }
+}
