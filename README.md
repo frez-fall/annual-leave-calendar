@@ -10,7 +10,7 @@ A reusable Webflow code component for calendar and leave planning that dynamical
 - **State Filtering**: Optional state dropdown for filtering state-specific holidays
 - **Automatic Calculations**:
   - Total Days Off
-  - Leave Days Used (excluding weekends and holidays)
+  - Leave Days Used (excluding weekends and public holidays only)
   - School Days Absent (excluding weekends, holidays, and school holiday periods)
 
 ## Architecture
@@ -19,7 +19,7 @@ A reusable Webflow code component for calendar and leave planning that dynamical
 
 - **Frontend**: React component with Mantine UI (Webflow Code Component)
 - **Backend**: Next.js API route for secure API proxying (deployed on Webflow Cloud)
-- **API Client**: Supports both direct API calls (dev) and backend proxy (production)
+- **API Client**: All requests go through the backend proxy for security
 
 ### Collections Required
 
@@ -47,8 +47,6 @@ npm install
 
 ### 2. Deploy API Backend to Webflow Cloud
 
-**Option A: Webflow Cloud (Recommended)**
-
 1. Create a new Webflow site for the API (or use an existing one)
 2. Connect your GitHub repository to Webflow Cloud
 3. In Webflow Cloud dashboard, add environment variable:
@@ -56,8 +54,7 @@ npm install
    - Value: Your Webflow API token
 4. Deploy the Next.js app to Webflow Cloud
 5. Note your Webflow Cloud deployment URL (e.g., `https://your-api-site.webflow.io`)
-
-**Note**: The API backend must be deployed to Webflow Cloud. The component is designed to work with Webflow Cloud's Next.js hosting.
+6. Set `NEXT_PUBLIC_BASE_PATH` environment variable if using a mount path
 
 ### 3. Share Component to Webflow
 
@@ -74,7 +71,7 @@ npm install
 3. **Install on Your Webflow Site**:
    - Open your Webflow site in Designer
    - Press `L` to open Libraries panel
-   - Find "Calendar & Leave Planning" library
+   - Find "Interactive annual leave calendar" library
    - Click "Install"
 
 ### 4. Configure Component in Webflow
@@ -158,8 +155,7 @@ Selected dates + all holidays (public + school) within the selected range
 ### Leave Days Used
 Selected dates excluding:
 - Weekends
-- Public holidays
-- School holidays
+- Public holidays only (school holidays are NOT excluded)
 
 ### School Days Absent
 Selected dates excluding:
@@ -216,4 +212,4 @@ This will update the component in your Webflow workspace.
 
 ## License
 
-MIT
+MIT 
