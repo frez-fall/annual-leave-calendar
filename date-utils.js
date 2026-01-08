@@ -93,8 +93,13 @@ export function isPublicHoliday(date, publicHolidays, selectedStateId = null) {
   }
 
   return publicHolidays.some(holiday => {
-    // Filter by state if provided (check if stateIds array includes selectedStateId)
-    if (selectedStateId && holiday.stateIds && !holiday.stateIds.includes(selectedStateId)) {
+    // Only filter by state if:
+    // 1. selectedStateId is provided
+    // 2. holiday has stateIds (not empty/undefined)
+    // 3. selectedStateId is not in holiday.stateIds
+    // If holiday has no stateIds or empty stateIds array, show it regardless of selectedStateId
+    const hasStateIds = holiday.stateIds && Array.isArray(holiday.stateIds) && holiday.stateIds.length > 0;
+    if (selectedStateId && hasStateIds && !holiday.stateIds.includes(selectedStateId)) {
       return false;
     }
 

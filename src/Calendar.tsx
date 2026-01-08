@@ -203,6 +203,9 @@ export function Calendar({
         }
       } else if (processedStates.length > 0 && shouldEnable) {
         setSelectedStateId(processedStates[0].id);
+      } else {
+        // Clear selectedStateId if there's no state collection or state filtering is disabled
+        setSelectedStateId(null);
       }
     } catch (err: any) {
       console.error('Error fetching collections:', err);

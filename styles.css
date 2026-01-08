@@ -351,7 +351,11 @@
   }
 
   .custom-dropdown {
-    width: fit-content;
+    width: 100%;
+  }
+
+  .custom-dropdown-trigger {
+    font-size: 3.7383vw;
   }
 
 

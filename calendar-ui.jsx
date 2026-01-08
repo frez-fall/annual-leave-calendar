@@ -92,7 +92,9 @@ export function CalendarUI({
   // Determine picker size based on screen size
   const [pickerSize, setPickerSize] = useState(() => {
     if (typeof window !== 'undefined') {
-      return window.innerWidth >= 1080 ? 'xl' : 'md';
+      if (window.innerWidth >= 1080) return 'xl';
+      if (window.innerWidth < 375) return 'xs';
+      return 'md';
     }
     return 'xl'; // Default to xl for SSR
   });
@@ -104,9 +106,16 @@ export function CalendarUI({
     setIsHydrated(true);
     
     const updateResponsive = () => {
-      const isDesktop = window.innerWidth >= 1080;
+      const width = window.innerWidth;
+      const isDesktop = width >= 1080;
       setNumberOfColumns(isDesktop ? 3 : 2);
-      setPickerSize(isDesktop ? 'xl' : 'md');
+      if (isDesktop) {
+        setPickerSize('xl');
+      } else if (width < 375) {
+        setPickerSize('xs');
+      } else {
+        setPickerSize('md');
+      }
     };
     
     // Set initial value based on current width
@@ -250,7 +259,7 @@ export function CalendarUI({
               onChange={handleChange}
               locale={locale}
               className="calendar-date-picker"
-              size="xl"
+              size={typeof window !== 'undefined' && window.innerWidth < 375 ? 'xs' : 'xl'}
               numberOfColumns={3}
               columnsToScroll={1}
               renderDay={renderDay}
