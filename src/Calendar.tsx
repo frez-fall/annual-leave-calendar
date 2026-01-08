@@ -248,6 +248,7 @@ export function Calendar({
 
   // Handle state selection change
   const handleStateChange = useCallback((newStateId: string | null) => {
+    // Force immediate state update
     setSelectedStateId(newStateId);
   }, []);
 

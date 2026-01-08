@@ -38,11 +38,14 @@ export function CustomDropdown({
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      // Use capture phase to catch events before Webflow handlers
+      document.addEventListener('mousedown', handleClickOutside, true);
+      document.addEventListener('click', handleClickOutside, true);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside, true);
+      document.removeEventListener('click', handleClickOutside, true);
     };
   }, [isOpen]);
 
@@ -66,21 +69,34 @@ export function CustomDropdown({
   const selectedOption = options.find(opt => opt.value === value);
   const displayText = selectedOption ? selectedOption.name : placeholder;
 
-  const handleToggle = () => {
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsOpen(!isOpen);
   };
 
-  const handleSelect = (optionValue: string) => {
-    onChange(optionValue || null);
-    setIsOpen(false);
+  const handleSelect = (optionValue: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Immediately call onChange and close dropdown
+    const valueToSet = optionValue || null;
+    onChange(valueToSet);
+    // Use requestAnimationFrame to ensure state updates are processed
+    requestAnimationFrame(() => {
+      setIsOpen(false);
+    });
   };
 
   return (
-    <div className={`custom-dropdown ${className}`} ref={dropdownRef}>
+    <div className={`custom-dropdown ${className}`} ref={dropdownRef} onClick={(e) => e.stopPropagation()}>
       <button
         type="button"
         className={`custom-dropdown-trigger ${isOpen ? 'open' : ''}`}
         onClick={handleToggle}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -112,7 +128,16 @@ export function CustomDropdown({
               key={option.id}
               type="button"
               className={`custom-dropdown-option ${value === option.value ? 'selected' : ''}`}
-              onClick={() => handleSelect(option.value)}
+              onClick={(e) => handleSelect(option.value, e)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSelect(option.value, e as any);
+              }}
               role="option"
               aria-selected={value === option.value}
             >
