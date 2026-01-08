@@ -89,21 +89,31 @@ export function CalendarUI({
     return 3; // Default to 3 for SSR
   });
 
+  // Determine picker size based on screen size
+  const [pickerSize, setPickerSize] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1080 ? 'xl' : 'md';
+    }
+    return 'xl'; // Default to xl for SSR
+  });
+
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Client-side hydration and responsive setup
   useEffect(() => {
     setIsHydrated(true);
     
-    const updateColumns = () => {
-      setNumberOfColumns(window.innerWidth >= 1080 ? 3 : 2);
+    const updateResponsive = () => {
+      const isDesktop = window.innerWidth >= 1080;
+      setNumberOfColumns(isDesktop ? 3 : 2);
+      setPickerSize(isDesktop ? 'xl' : 'md');
     };
     
     // Set initial value based on current width
-    updateColumns();
+    updateResponsive();
     
-    window.addEventListener('resize', updateColumns);
-    return () => window.removeEventListener('resize', updateColumns);
+    window.addEventListener('resize', updateResponsive);
+    return () => window.removeEventListener('resize', updateResponsive);
   }, []);
 
   // Create default theme if none provided
@@ -198,7 +208,7 @@ export function CalendarUI({
               }} 
             />
           )}
-          <span style={{ position: 'relative', zIndex: 2 }} className="day-number">{day}</span>
+          <span style={{ position: 'relative', zIndex: 2 }} className={`day-number ${isPubHoliday ? 'public-holiday-day' : ''}`}>{day}</span>
         </div>
       );
     };
@@ -219,18 +229,18 @@ export function CalendarUI({
         <div className="calendar-container">
           {isHydrated ? (
             <DatePicker
-              key={`hydrated-${publicHolidays.length}-${schoolHolidays.length}-${numberOfColumns}`}
+              key={`hydrated-${publicHolidays.length}-${schoolHolidays.length}-${numberOfColumns}-${pickerSize}`}
               type="range"
               value={value}
               onChange={handleChange}
               locale={locale}
               className="calendar-date-picker"
-              size="sm"
+              size={pickerSize}
               numberOfColumns={numberOfColumns}
               columnsToScroll={1}
               renderDay={renderDay}
               minDate={today}
-              hideOutsideDates={false}
+              hideOutsideDates={true}
             />
           ) : (
             <DatePicker
@@ -240,12 +250,12 @@ export function CalendarUI({
               onChange={handleChange}
               locale={locale}
               className="calendar-date-picker"
-              size="sm"
+              size="xl"
               numberOfColumns={3}
               columnsToScroll={1}
               renderDay={renderDay}
               minDate={today}
-              hideOutsideDates={false}
+              hideOutsideDates={true}
             />
           )}
         </div>

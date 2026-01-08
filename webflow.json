@@ -9,5 +9,12 @@
   },
   "cloud": {
     "framework": "nextjs"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": false,
+      "lastPrompted": 1766562281145,
+      "version": "1.10.0"
+    }
   }
 }

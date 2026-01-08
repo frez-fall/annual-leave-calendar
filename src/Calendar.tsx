@@ -252,7 +252,7 @@ export function Calendar({
   const dropdownOptions = useMemo(() => {
     return states.map((state: any) => ({
       id: state.id,
-      name: state.name,
+      name: state.abbreviated || state.name, // Use abbreviated field, fallback to name
       value: state.id,
     }));
   }, [states]);

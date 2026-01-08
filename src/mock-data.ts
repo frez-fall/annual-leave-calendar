@@ -119,11 +119,13 @@ export const mockStates = [
   {
     id: 'state1',
     name: 'New South Wales',
+    abbreviated: 'NSW',
     slug: 'nsw',
   },
   {
     id: 'state2',
     name: 'Victoria',
+    abbreviated: 'VIC',
     slug: 'vic',
   },
 ];
@@ -134,4 +136,6 @@ export const mockStates = [
 export function delay(ms: number = 500): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+
 

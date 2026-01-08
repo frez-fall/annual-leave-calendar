@@ -18,10 +18,11 @@ export default declareComponent(Calendar, {
     }),
     apiEndpoint: props.Text({
       name: 'API Endpoint',
-      defaultValue: '',
+      defaultValue: 'https://paylatertravel-us.webflow.io/leave-calendar/api/webflow-proxy',
     }),
     defaultState: props.Text({
       name: 'Default State',
+      tooltip: 'If applicable, sets the default state for the loaded data',
       defaultValue: '',
     }),
     locale: props.Text({
