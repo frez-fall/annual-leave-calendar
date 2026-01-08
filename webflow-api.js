@@ -115,9 +115,8 @@ export class WebflowApiClient {
 
   /**
    * Fetch all items from a collection (handles pagination automatically)
-   * Only returns published items (excludes draft and archived items)
    * @param {string} collectionId - Collection ID
-   * @returns {Promise<Array>} Array of all published items
+   * @returns {Promise<Array>} Array of all items
    */
   async fetchAllCollectionItems(collectionId) {
     const allItems = [];
@@ -128,14 +127,7 @@ export class WebflowApiClient {
     while (hasMore) {
       const response = await this.listCollectionItems(collectionId, { limit, offset });
       const items = response.items || [];
-      
-      // Filter out draft and archived items - only include published items
-      const publishedItems = items.filter(item => {
-        // Item is published if it's not a draft and not archived
-        return !item.isDraft && !item.isArchived;
-      });
-      
-      allItems.push(...publishedItems);
+      allItems.push(...items);
 
       // Check if there are more items
       hasMore = items.length === limit;

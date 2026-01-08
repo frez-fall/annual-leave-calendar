@@ -23,7 +23,7 @@ export default declareComponent(Calendar, {
     defaultState: props.Text({
       name: 'Default State',
       tooltip: 'If applicable, sets the default state for the loaded data',
-      defaultValue: 'New South Wales',
+      defaultValue: '',
     }),
     locale: props.Text({
       name: 'Locale',

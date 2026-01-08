@@ -203,9 +203,6 @@ export function Calendar({
         }
       } else if (processedStates.length > 0 && shouldEnable) {
         setSelectedStateId(processedStates[0].id);
-      } else {
-        // Clear selectedStateId if there's no state collection or state filtering is disabled
-        setSelectedStateId(null);
       }
     } catch (err: any) {
       console.error('Error fetching collections:', err);
@@ -248,7 +245,6 @@ export function Calendar({
 
   // Handle state selection change
   const handleStateChange = useCallback((newStateId: string | null) => {
-    // Force immediate state update
     setSelectedStateId(newStateId);
   }, []);
 
@@ -256,7 +252,7 @@ export function Calendar({
   const dropdownOptions = useMemo(() => {
     return states.map((state: any) => ({
       id: state.id,
-      name: state.abbreviated || state.name, // Use abbreviated field, fallback to name
+      name: state.name,
       value: state.id,
     }));
   }, [states]);

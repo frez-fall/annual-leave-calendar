@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendar Component Test</title>
+  <title>Calendar Component - Local Test</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -15,15 +15,15 @@
       max-width: 1400px;
       margin: 0 auto;
       background: white;
-      padding: 24px;
+      padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .config-form {
-      margin-bottom: 24px;
-      padding: 20px;
       background: #f9f9f9;
+      padding: 20px;
       border-radius: 8px;
+      margin-bottom: 20px;
       border: 1px solid #e0e0e0;
     }
     .config-form h2 {
@@ -32,17 +32,16 @@
       color: #333;
     }
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 15px;
     }
     .form-group label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       font-weight: 500;
       color: #555;
       font-size: 14px;
     }
-    .form-group input[type="text"],
-    .form-group input[type="url"] {
+    .form-group input {
       width: 100%;
       padding: 8px 12px;
       border: 1px solid #ddd;
@@ -50,107 +49,92 @@
       font-size: 14px;
       box-sizing: border-box;
     }
-    .form-group input[type="checkbox"] {
-      margin-right: 8px;
+    .form-group input:focus {
+      outline: none;
+      border-color: #0066cc;
+      box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
     }
-    .form-group small {
-      display: block;
-      margin-top: 4px;
-      color: #666;
-      font-size: 12px;
-    }
-    .button-group {
+    .form-group.checkbox {
       display: flex;
-      gap: 12px;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-group.checkbox input {
+      width: auto;
+    }
+    .form-actions {
+      display: flex;
+      gap: 10px;
       margin-top: 20px;
     }
     button {
       padding: 10px 20px;
-      background: #0070f3;
-      color: white;
       border: none;
       border-radius: 4px;
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background-color 0.2s;
     }
-    button:hover {
-      background: #0051cc;
+    button.primary {
+      background-color: #0066cc;
+      color: white;
+    }
+    button.primary:hover {
+      background-color: #0052a3;
     }
     button.secondary {
-      background: #666;
+      background-color: #f0f0f0;
+      color: #333;
     }
     button.secondary:hover {
-      background: #555;
+      background-color: #e0e0e0;
     }
     #root {
       min-height: 400px;
-      margin-top: 24px;
     }
-    .info-box {
-      background: #e3f2fd;
-      border-left: 4px solid #2196f3;
-      padding: 12px;
-      margin-bottom: 16px;
-      border-radius: 4px;
-      font-size: 13px;
-      color: #1565c0;
+    .info-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
   <div class="test-container">
-    <h1>Calendar Component Test</h1>
-    
     <div class="config-form">
-      <h2>Configuration</h2>
-      
-      <div class="info-box">
-        <strong>Quick Start:</strong> Check "Use Mock Data" to test without API setup, or provide your Webflow Site ID and API Endpoint.
-      </div>
-      
+      <h2>Component Configuration</h2>
       <div class="form-group">
-        <label>
-          <input type="checkbox" id="useMockData">
-          Use Mock Data (for testing without API)
-        </label>
-        <small>When enabled, the component will use sample data instead of making API calls</small>
-      </div>
-      
-      <div class="form-group">
-        <label for="siteId">Webflow Site ID</label>
+        <label for="siteId">Site ID</label>
         <input type="text" id="siteId" placeholder="e.g., 1234567890abcdef">
-        <small>Your Webflow site ID (required if not using mock data)</small>
+        <div class="info-text">Your Webflow site ID</div>
       </div>
-      
       <div class="form-group">
         <label for="apiEndpoint">API Endpoint</label>
-        <input type="url" id="apiEndpoint" placeholder="e.g., http://localhost:3000/api/webflow-proxy or https://your-site.webflow.io/leave-calendar/api/webflow-proxy">
-        <small>Your Next.js API route URL (required if not using mock data). For local testing, use: http://localhost:3000/api/webflow-proxy</small>
+        <input type="text" id="apiEndpoint" placeholder="e.g., http://localhost:3000/api/webflow-proxy" value="http://localhost:3000/api/webflow-proxy">
+        <div class="info-text">Backend proxy endpoint (required for browser testing)</div>
       </div>
-      
       <div class="form-group">
         <label for="defaultState">Default State (Optional)</label>
-        <input type="text" id="defaultState" placeholder="e.g., California">
-        <small>If applicable, sets the default state for the loaded data</small>
+        <input type="text" id="defaultState" placeholder="e.g., NSW">
+        <div class="info-text">Pre-select a state when component loads</div>
       </div>
-      
       <div class="form-group">
         <label for="locale">Locale</label>
-        <input type="text" id="locale" value="en-US" placeholder="e.g., en-US">
-        <small>Date locale (default: en-US)</small>
+        <input type="text" id="locale" placeholder="e.g., en-US" value="en-US">
+        <div class="info-text">Date formatting locale</div>
       </div>
-      
-      <div class="button-group">
-        <button onclick="loadComponent()">Load Component</button>
-        <button class="secondary" onclick="clearComponent()">Clear</button>
+      <div class="form-group checkbox">
+        <input type="checkbox" id="useMockData">
+        <label for="useMockData" style="margin: 0;">Use Mock Data (no API required)</label>
+      </div>
+      <div class="form-actions">
+        <button class="primary" onclick="window.loadComponent()">Load Component</button>
+        <button class="secondary" onclick="window.location.href = '?useMockData=true'">Quick Test (Mock Data)</button>
       </div>
     </div>
-    
     <div id="root"></div>
   </div>
-  
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

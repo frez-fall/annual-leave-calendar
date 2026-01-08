@@ -3,11 +3,6 @@
  * Reference existing calendar styling from GitHub repo
  */
 
-:root {
-  --day-size: 32px;
-  --day-size-xl: 40px;
-}
-
 .calendar-component {
   width: 100%;
   max-width: 1400px;
@@ -99,8 +94,9 @@
 /* Custom Dropdown Component */
 .custom-dropdown {
   position: relative;
-  width: fit-content;
-  z-index: 1;
+  min-width: 200px;
+  width: 100%;
+  max-width: 300px;
 }
 
 .custom-dropdown-trigger {
@@ -123,15 +119,6 @@
 
 .custom-dropdown-trigger:hover {
   border-color: var(--border, #b0b0b0);
-}
-
-/* Remove hover state from state dropdown button */
-.custom-dropdown.state-dropdown .custom-dropdown-trigger:hover,
-.custom-dropdown.state-dropdown .custom-dropdown-trigger:active {
-  border-color: var(--input, #e0e0e0) !important;
-  background-color: var(--card, #ffffff) !important;
-  box-shadow: none !important;
-  color: inherit !important;
 }
 
 .custom-dropdown-trigger:focus {
@@ -170,17 +157,16 @@
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  min-width: 100%;
+  right: 0;
   background-color: var(--popover, #ffffff);
   border: 1px solid var(--border, #e0e0e0);
   border-radius: var(--radius-md, 8px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 9999 !important;
+  z-index: 1000;
   max-height: 300px;
   overflow-y: auto;
   margin: 0;
-  padding: 4px;
-  pointer-events: auto !important;
+  padding: 4px 0;
 }
 
 .custom-dropdown-option {
@@ -353,11 +339,8 @@
   }
 
   .custom-dropdown {
-    width: 100%;
-  }
-
-  .custom-dropdown-trigger {
-    font-size: 3.7383vw;
+    min-width: 100%;
+    max-width: 100%;
   }
 
 
@@ -422,6 +405,7 @@
 
   .mantine-DatePicker-day {
     /* Use same sizing as desktop - let Mantine handle the width */
+    min-width: 0;
     position: relative;
     overflow: hidden; /* Prevent highlights from overflowing */
   }
@@ -430,6 +414,7 @@
   .mantine-DatePicker-day .calendar-day-content {
     width: 100%;
     height: 100%;
+    min-height: 32px;
     position: relative;
     display: flex;
     align-items: center;
@@ -719,45 +704,6 @@
   border-radius: 0 !important; /* Remove border-radius from date picker buttons */
 }
 
-/* Remove hover states on disabled dates */
-.mantine-DatePicker-day[data-disabled]:hover,
-.mantine-DatePicker-day[aria-disabled="true"]:hover,
-.mantine-DatePicker-day[data-disabled="true"]:hover {
-  background-color: transparent !important;
-  cursor: not-allowed !important;
-}
-
-/* Remove hover states on dates before minDate (invalid dates) */
-.mantine-DatePicker-day:not([data-selected]):not([data-first-in-range]):not([data-last-in-range]):not([data-in-range])[data-disabled]:hover {
-  background-color: transparent !important;
-  cursor: not-allowed !important;
-}
-
-/* Remove hover states on calendar header control buttons (arrow buttons) when disabled */
-.mantine-DatePicker-calendarHeaderControl[data-disabled]:hover,
-.mantine-DatePicker-calendarHeaderControl[aria-disabled="true"]:hover,
-.mantine-DatePicker-calendarHeaderControl[disabled]:hover {
-  background-color: transparent !important;
-  color: inherit !important;
-  border-color: transparent !important;
-  cursor: not-allowed !important;
-  opacity: 0.5 !important;
-  transform: none !important;
-}
-
-/* Prevent any color changes on disabled arrow buttons */
-.mantine-DatePicker-calendarHeaderControl[data-disabled],
-.mantine-DatePicker-calendarHeaderControl[aria-disabled="true"],
-.mantine-DatePicker-calendarHeaderControl[disabled] {
-  pointer-events: auto !important;
-}
-
-.mantine-DatePicker-calendarHeaderControl[data-disabled]:hover *,
-.mantine-DatePicker-calendarHeaderControl[aria-disabled="true"]:hover *,
-.mantine-DatePicker-calendarHeaderControl[disabled]:hover * {
-  color: inherit !important;
-}
-
 /* Override Mantine's default border-radius on date picker day buttons */
 .m_396ce5cb {
   border-radius: 0 !important;
@@ -780,7 +726,7 @@
   content: '';
   position: absolute;
   top: 0.5px;
-  left: 0; /* Don't extend backwards on leftmost column */
+  left: -50%; /* Extend backwards to connect with start date */
   right: -50%;
   bottom: 0.5px;
   background-color: #CDDCFC;

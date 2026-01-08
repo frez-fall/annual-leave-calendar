@@ -152,7 +152,7 @@ export function processStates(items, fields) {
     return [];
   }
 
-  const { nameField, abbreviatedField, slugField } = fields;
+  const { nameField, slugField } = fields;
 
   return items
     .map(item => {
@@ -161,18 +161,12 @@ export function processStates(items, fields) {
       // Extract name
       const name = nameField ? (fieldData[nameField.slug] || 'Untitled State') : 'Untitled State';
       
-      // Extract abbreviated (fallback to name if not available)
-      const abbreviated = abbreviatedField 
-        ? (fieldData[abbreviatedField.slug] || name)
-        : name;
-      
       // Extract slug
       const slug = slugField ? (fieldData[slugField.slug] || '') : '';
 
       return {
         id: item.id,
         name,
-        abbreviated,
         slug,
       };
     })

@@ -24,6 +24,8 @@ export default defineConfig(({ command, mode }) => {
       port: 5173,
       strictPort: false, // Allow fallback to next available port if 5173 is taken
     };
+    // Use src/main.tsx as entry point for dev mode
+    config.root = '.';
   }
   
   // Build mode: library build for Webflow

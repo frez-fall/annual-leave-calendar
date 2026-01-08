@@ -17,6 +17,7 @@ function getConfig() {
     apiEndpoint: params.get('apiEndpoint') || (document.getElementById('apiEndpoint') as HTMLInputElement)?.value || '',
     defaultState: params.get('defaultState') || (document.getElementById('defaultState') as HTMLInputElement)?.value || '',
     locale: params.get('locale') || (document.getElementById('locale') as HTMLInputElement)?.value || 'en-US',
+    theme: params.get('theme') || 'dark',
     useMockData: params.get('useMockData') === 'true' || (document.getElementById('useMockData') as HTMLInputElement)?.checked || false,
   };
 }
@@ -33,7 +34,7 @@ function getConfig() {
     }
     
     if (!config.apiEndpoint) {
-      alert('Please enter an API Endpoint (e.g., http://localhost:3000/api/webflow-proxy)');
+      alert('Please enter an API Endpoint (backend proxy)');
       return;
     }
   }
@@ -85,6 +86,7 @@ function getConfig() {
               apiEndpoint={config.apiEndpoint || undefined}
               defaultState={config.defaultState || undefined}
               locale={config.locale}
+              theme={config.theme as 'light' | 'dark'}
               useMockData={config.useMockData}
             />
           </ErrorBoundary>
@@ -93,24 +95,6 @@ function getConfig() {
     } catch (error) {
       console.error('Error rendering Calendar:', error);
     }
-  }
-};
-
-// Clear component function
-(window as any).clearComponent = function() {
-  const rootElement = document.getElementById('root');
-  if (rootElement) {
-    rootElement.innerHTML = `
-      <div style="text-align: center; padding: 40px; color: #666;">
-        <p>Enter your configuration above and click "Load Component" to test the Calendar component.</p>
-        <p style="font-size: 14px; margin-top: 10px;">
-          <strong>Quick Test:</strong> Check "Use Mock Data" to test with sample data (no API required)<br/><br/>
-          Or pass parameters via URL:<br/>
-          <code>?useMockData=true</code> (for mock data)<br/>
-          <code>?siteId=YOUR_SITE_ID&apiEndpoint=YOUR_ENDPOINT</code> (for real API)
-        </p>
-      </div>
-    `;
   }
 };
 
@@ -129,8 +113,7 @@ if (rootElement && !window.location.search.includes('siteId=') && !window.locati
         <strong>Quick Test:</strong> Check "Use Mock Data" to test with sample data (no API required)<br/><br/>
         Or pass parameters via URL:<br/>
         <code>?useMockData=true</code> (for mock data)<br/>
-        <code>?siteId=YOUR_SITE_ID&apiEndpoint=YOUR_ENDPOINT</code> (for real API)<br/>
-        <code>?useMockData=true</code> (for mock data)
+        <code>?siteId=YOUR_SITE_ID&apiEndpoint=YOUR_ENDPOINT</code> (for real API)
       </p>
     </div>
   `;

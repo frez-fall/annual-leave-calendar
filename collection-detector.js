@@ -130,7 +130,6 @@ export function discoverStateFields(collectionSchema) {
   
   return {
     nameField: findFieldBySlug(fields, ['name']) || findFieldByType(fields, 'PlainText'),
-    abbreviatedField: findFieldBySlug(fields, ['abbreviated', 'abbr', 'abbreviation']) || null,
     slugField: findFieldBySlug(fields, ['slug']) || null,
   };
 }
