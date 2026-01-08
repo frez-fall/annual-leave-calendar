@@ -19,6 +19,10 @@ export function processPublicHolidays(items, fields) {
   const { dateField, nameField, stateField } = fields;
 
   return items
+    .filter(item => {
+      // Only include published items (not archived)
+      return !item.isArchived;
+    })
     .map(item => {
       const fieldData = item.fieldData || {};
       
@@ -78,6 +82,10 @@ export function processSchoolHolidays(items, fields) {
   const { startDateField, endDateField, nameField, stateField } = fields;
 
   return items
+    .filter(item => {
+      // Only include published items (not archived)
+      return !item.isArchived;
+    })
     .map(item => {
       const fieldData = item.fieldData || {};
       
@@ -155,6 +163,10 @@ export function processStates(items, fields) {
   const { nameField, abbreviatedField, slugField } = fields;
 
   return items
+    .filter(item => {
+      // Only include published items (not archived)
+      return !item.isArchived;
+    })
     .map(item => {
       const fieldData = item.fieldData || {};
       
