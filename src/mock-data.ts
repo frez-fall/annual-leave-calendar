@@ -120,11 +120,13 @@ export const mockStates = [
     id: 'state1',
     name: 'New South Wales',
     slug: 'nsw',
+    abbreviation: 'NSW',
   },
   {
     id: 'state2',
     name: 'Victoria',
     slug: 'vic',
+    abbreviation: 'VIC',
   },
 ];
 

@@ -234,7 +234,7 @@ export default function CalendarComponent(props) {
             <option value="">All States</option>
             {states.map(state => (
               <option key={state.id} value={state.id}>
-                {state.name}
+                {state.abbreviation || state.name}
               </option>
             ))}
           </select>

@@ -6,19 +6,40 @@
 import { parseWebflowDate, normalizeDate } from './date-utils.js';
 
 /**
+ * Filter items to only include published items (exclude archived and draft)
+ * @param {Array} items - Array of items from API
+ * @returns {Array} Filtered items (only published)
+ */
+function filterPublishedItems(items) {
+  if (!items || !Array.isArray(items)) {
+    return [];
+  }
+  
+  return items.filter(item => {
+    // Webflow items have isArchived and isDraft properties
+    // Only include items that are not archived and not draft (i.e., published)
+    return !item.isArchived && !item.isDraft;
+  });
+}
+
+/**
  * Process public holiday items from Webflow API
  * @param {Array} items - Raw items from API
  * @param {object} fields - Discovered field structure
  * @returns {Array} Normalized public holiday objects
  */
+
 export function processPublicHolidays(items, fields) {
-  if (!items || !Array.isArray(items)) {
+  // Filter to only published items
+  const publishedItems = filterPublishedItems(items);
+  
+  if (!publishedItems || !Array.isArray(publishedItems)) {
     return [];
   }
 
   const { dateField, nameField, stateField } = fields;
 
-  return items
+  return publishedItems
     .map(item => {
       const fieldData = item.fieldData || {};
       
@@ -71,13 +92,16 @@ export function processPublicHolidays(items, fields) {
  * @returns {Array} Normalized school holiday objects
  */
 export function processSchoolHolidays(items, fields) {
-  if (!items || !Array.isArray(items)) {
+  // Filter to only published items
+  const publishedItems = filterPublishedItems(items);
+  
+  if (!publishedItems || !Array.isArray(publishedItems)) {
     return [];
   }
 
   const { startDateField, endDateField, nameField, stateField } = fields;
 
-  return items
+  return publishedItems
     .map(item => {
       const fieldData = item.fieldData || {};
       
@@ -148,13 +172,16 @@ export function processSchoolHolidays(items, fields) {
  * @returns {Array} Normalized state objects
  */
 export function processStates(items, fields) {
-  if (!items || !Array.isArray(items)) {
+  // Filter to only published items
+  const publishedItems = filterPublishedItems(items);
+  
+  if (!publishedItems || !Array.isArray(publishedItems)) {
     return [];
   }
 
-  const { nameField, slugField } = fields;
+  const { nameField, slugField, abbreviationField } = fields;
 
-  return items
+  return publishedItems
     .map(item => {
       const fieldData = item.fieldData || {};
       
@@ -163,11 +190,15 @@ export function processStates(items, fields) {
       
       // Extract slug
       const slug = slugField ? (fieldData[slugField.slug] || '') : '';
+      
+      // Extract abbreviation
+      const abbreviation = abbreviationField ? (fieldData[abbreviationField.slug] || '') : '';
 
       return {
         id: item.id,
         name,
         slug,
+        abbreviation,
       };
     })
     .filter(Boolean)

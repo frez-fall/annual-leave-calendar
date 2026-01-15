@@ -3,7 +3,7 @@
  * Handles date range selection and holiday highlighting
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { DatePicker } from '@mantine/dates';
 import { MantineProvider, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css';
@@ -89,22 +89,51 @@ export function CalendarUI({
     return 3; // Default to 3 for SSR
   });
 
+  // Determine DatePicker size based on viewport width
+  const [datePickerSize, setDatePickerSize] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const width = window.innerWidth;
+      if (width < 375) {
+        return 'xs';
+      } else if (width >= 1080) {
+        return 'xl';
+      } else {
+        return 'md';
+      }
+    }
+    return 'md'; // Default to md for SSR
+  });
+
   const [isHydrated, setIsHydrated] = useState(false);
+  
+  // Ref to access DatePicker instance
+  const datePickerRef = useRef(null);
 
   // Client-side hydration and responsive setup
   useEffect(() => {
     setIsHydrated(true);
     
-    const updateColumns = () => {
-      setNumberOfColumns(window.innerWidth >= 1080 ? 3 : 2);
+    const updateResponsive = () => {
+      const width = window.innerWidth;
+      setNumberOfColumns(width >= 1080 ? 3 : 2);
+      
+      // Update DatePicker size based on viewport
+      if (width < 375) {
+        setDatePickerSize('xs');
+      } else if (width >= 1080) {
+        setDatePickerSize('xl');
+      } else {
+        setDatePickerSize('md');
+      }
     };
     
     // Set initial value based on current width
-    updateColumns();
+    updateResponsive();
     
-    window.addEventListener('resize', updateColumns);
-    return () => window.removeEventListener('resize', updateColumns);
+    window.addEventListener('resize', updateResponsive);
+    return () => window.removeEventListener('resize', updateResponsive);
   }, []);
+
 
   // Create default theme if none provided
   const mantineTheme = theme || createTheme({});
@@ -151,6 +180,7 @@ export function CalendarUI({
   }, [schoolHolidays, selectedStateId]);
 
   // Custom day renderer with holiday highlighting
+  // This is memoized with selectedStateId dependency - should trigger re-render when state changes
   const renderDay = useMemo(() => {
     return (date) => {
       const dateObj = date instanceof Date ? date : new Date(date);
@@ -225,12 +255,13 @@ export function CalendarUI({
               onChange={handleChange}
               locale={locale}
               className="calendar-date-picker"
-              size="sm"
+              size={datePickerSize}
               numberOfColumns={numberOfColumns}
               columnsToScroll={1}
               renderDay={renderDay}
               minDate={today}
-              hideOutsideDates={false}
+              hideOutsideDates={true}
+              ref={datePickerRef}
             />
           ) : (
             <DatePicker
@@ -240,12 +271,12 @@ export function CalendarUI({
               onChange={handleChange}
               locale={locale}
               className="calendar-date-picker"
-              size="sm"
+              size="md"
               numberOfColumns={3}
               columnsToScroll={1}
               renderDay={renderDay}
               minDate={today}
-              hideOutsideDates={false}
+              hideOutsideDates={true}
             />
           )}
         </div>

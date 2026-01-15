@@ -128,9 +128,17 @@ export function discoverSchoolHolidayFields(collectionSchema, statesCollectionId
 export function discoverStateFields(collectionSchema) {
   const fields = collectionSchema.fields || [];
   
+  // Find name field - prefer 'name', fallback to first PlainText field
+  const nameField = findFieldBySlug(fields, ['name']) || findFieldByType(fields, 'PlainText');
+  
+  // Find abbreviation field - check for 'abbreviation' first, then 'title' as fallback
+  // This handles cases where the abbreviation field might be named 'title' in Webflow
+  const abbreviationField = findFieldBySlug(fields, ['abbreviation']) || findFieldBySlug(fields, ['title']);
+  
   return {
-    nameField: findFieldBySlug(fields, ['name']) || findFieldByType(fields, 'PlainText'),
+    nameField,
     slugField: findFieldBySlug(fields, ['slug']) || null,
+    abbreviationField,
   };
 }
 
