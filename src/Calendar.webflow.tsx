@@ -18,7 +18,8 @@ export default declareComponent(Calendar, {
     }),
     apiEndpoint: props.Text({
       name: 'API Endpoint',
-      defaultValue: 'https://paylatertravel-us.webflow.io/leave-calendar/api/webflow-proxy',
+      tooltip: "Leave as a relative path to use this site's own proxy",
+      defaultValue: '/leave-calendar-app/api/webflow-proxy',
     }),
     defaultState: props.Text({
       name: 'Default State',
@@ -29,6 +30,11 @@ export default declareComponent(Calendar, {
       name: 'Locale',
       defaultValue: 'en-US',
     }),
+    cmsLocale: props.Text({
+      name: 'CMS Locale (optional)',
+      tooltip: 'Leave blank to auto-detect from the page. Set a tag like en-CA to force a locale.',
+      defaultValue: '',
+    }),
     theme: props.Variant({
       name: 'Theme',
       options: ['dark', 'light'],
@@ -36,4 +42,3 @@ export default declareComponent(Calendar, {
     }),
   },
 });
-

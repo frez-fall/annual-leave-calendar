@@ -2,7 +2,7 @@
  * Next.js API route for Webflow API proxy
  * Securely handles Webflow API requests with server-side authentication
  * Deployed on Webflow Cloud
- * 
+ *
  * Next.js automatically loads .env.local files, so manual loading is not needed
  */
 
@@ -53,8 +53,27 @@ export default async function handler(req, res) {
         // Body parsing failed
       }
     }
-    
-    const { siteId, method, path, params } = body || {};
+
+    const { method, path, params } = body || {};
+
+    // Each Webflow Cloud deployment serves one site. Prefer the site ID from
+    // the environment, and reject requests meant for a different site.
+    const envSiteId = process.env.WEBFLOW_SITE_ID;
+    if (envSiteId && body?.siteId && body.siteId !== envSiteId) {
+      return res.status(403).json({
+        error: 'Site mismatch',
+        message: 'This proxy only serves its own site. Check the API Endpoint prop on this component.',
+      });
+    }
+    const siteId = envSiteId || body?.siteId;
+
+    // Read-only proxy
+    if ((method || 'GET') !== 'GET') {
+      return res.status(405).json({
+        error: 'Method not allowed',
+        message: 'This proxy is read-only',
+      });
+    }
 
     // Validate required fields
     if (!siteId) {
@@ -134,4 +153,3 @@ export default async function handler(req, res) {
     });
   }
 }
-

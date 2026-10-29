@@ -28,6 +28,7 @@ export interface CalendarProps {
   apiEndpoint?: string;
   defaultState?: string;
   locale?: string;
+  cmsLocale?: string; // Optional override for CMS locale (e.g. "en-CA"); auto-detected when blank
   theme?: 'light' | 'dark';
   useMockData?: boolean; // Enable mock data mode for testing
 }
@@ -40,6 +41,7 @@ export function Calendar({
   apiEndpoint,
   defaultState,
   locale = 'en-US',
+  cmsLocale = '',
   theme = 'dark',
   useMockData = false,
 }: CalendarProps) {
@@ -95,7 +97,7 @@ export function Calendar({
       if (useMockData) {
         // Simulate API delay
         await delay(800);
-        
+
         // Process mock data
         const processedPublicHolidays = mockPublicHolidays.map(h => ({
           ...h,
@@ -124,7 +126,7 @@ export function Calendar({
         } else if (processedStates.length > 0) {
           setSelectedStateId(processedStates[0].id);
         }
-        
+
         setLoading(false);
         return;
       }
@@ -136,7 +138,7 @@ export function Calendar({
 
       // Step 1: List all collections
       const allCollections = await apiClient.listCollections();
-      
+
       // Step 2: Detect relevant collections
       const detected = detectCollections(allCollections);
 
@@ -171,14 +173,24 @@ export function Calendar({
       );
       setEnableStateFilter(shouldEnable);
 
+      // Step 4.5: Resolve the CMS locale
+      // Single-locale site (AU) returns null = primary content
+      // Multi-locale site (US) returns the locale of the page being viewed
+      const cmsLocaleId = await apiClient
+        .resolveCmsLocaleId(cmsLocale)
+        .catch((err: any) => {
+          console.warn('Could not resolve CMS locale, using primary locale:', err);
+          return null;
+        });
+
       // Step 5: Fetch all items
       const [publicHolidayItems, schoolHolidayItems, stateItems] = await Promise.all([
-        apiClient.fetchAllCollectionItems(detected.publicHolidays.id),
+        apiClient.fetchAllCollectionItems(detected.publicHolidays.id, { cmsLocaleId }),
         detected.schoolHolidays
-          ? apiClient.fetchAllCollectionItems(detected.schoolHolidays.id)
+          ? apiClient.fetchAllCollectionItems(detected.schoolHolidays.id, { cmsLocaleId })
           : Promise.resolve([]),
         detected.states
-          ? apiClient.fetchAllCollectionItems(detected.states.id)
+          ? apiClient.fetchAllCollectionItems(detected.states.id, { cmsLocaleId })
           : Promise.resolve([]),
       ]);
 
@@ -210,7 +222,7 @@ export function Calendar({
     } finally {
       setLoading(false);
     }
-  }, [apiClient, defaultState, useMockData]);
+  }, [apiClient, defaultState, useMockData, cmsLocale]);
 
   // Fetch collections on mount
   useEffect(() => {
@@ -329,4 +341,3 @@ export function Calendar({
     </div>
   );
 }
-

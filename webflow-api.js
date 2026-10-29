@@ -98,34 +98,85 @@ export class WebflowApiClient {
   }
 
   /**
+   * Get site details (includes locales)
+   * @returns {Promise<object>} Site object
+   */
+  async getSite() {
+    return await this.request('GET', `sites/${this.siteId}`);
+  }
+
+  /**
+   * Resolve the cmsLocaleId for the locale the customer is viewing.
+   * - Single-locale site (AU): returns null (no filter, primary content)
+   * - Multi-locale site (US): matches override, then URL subdirectory,
+   *   then <html lang>, then falls back to the primary locale. Exact matches only.
+   * @param {string} overrideTag - Optional locale tag to force (e.g. "en-CA")
+   * @returns {Promise<string|null>} cmsLocaleId or null
+   */
+  async resolveCmsLocaleId(overrideTag) {
+    const site = await this.getSite();
+    const primary = site.locales?.primary;
+    const secondary = (site.locales?.secondary || []).filter(l => l.enabled !== false);
+
+    // Single-locale site: nothing to filter
+    if (secondary.length === 0) return null;
+
+    const all = [primary, ...secondary].filter(Boolean);
+    const norm = s => (s || '').toLowerCase();
+
+    // 0. Explicit override from the Designer prop
+    let match = overrideTag ? all.find(l => norm(l.tag) === norm(overrideTag)) : null;
+
+    // 1. URL subdirectory, e.g. /en-ca/page
+    if (!match && typeof window !== 'undefined') {
+      const firstSegment = norm(window.location.pathname.split('/')[1]);
+      match = all.find(l => l.subdirectory && norm(l.subdirectory) === firstSegment);
+    }
+
+    // 2. <html lang>, which Webflow sets per locale
+    if (!match && typeof document !== 'undefined') {
+      const lang = norm(document.documentElement.lang);
+      match = all.find(l => norm(l.tag) === lang);
+    }
+
+    return (match || primary)?.cmsLocaleId || null;
+  }
+
+  /**
    * List items in a collection with pagination
    * @param {string} collectionId - Collection ID
    * @param {object} options - Pagination options
    * @param {number} options.limit - Items per page (default: 100)
    * @param {number} options.offset - Offset for pagination (default: 0)
+   * @param {string|null} options.cmsLocaleId - CMS locale to fetch (omit for primary)
    * @returns {Promise<object>} Response with items array
    */
   async listCollectionItems(collectionId, options = {}) {
-    const { limit = 100, offset = 0 } = options;
-    return await this.request('GET', `collections/${collectionId}/items`, {
-      limit,
-      offset,
-    });
+    const { limit = 100, offset = 0, cmsLocaleId } = options;
+    const params = { limit, offset };
+    if (cmsLocaleId) params.cmsLocaleId = cmsLocaleId;
+    return await this.request('GET', `collections/${collectionId}/items`, params);
   }
 
   /**
    * Fetch all items from a collection (handles pagination automatically)
    * @param {string} collectionId - Collection ID
+   * @param {object} options - Options
+   * @param {string|null} options.cmsLocaleId - CMS locale to fetch (omit for primary)
    * @returns {Promise<Array>} Array of all items
    */
-  async fetchAllCollectionItems(collectionId) {
+  async fetchAllCollectionItems(collectionId, options = {}) {
     const allItems = [];
     let offset = 0;
     const limit = 100;
     let hasMore = true;
 
     while (hasMore) {
-      const response = await this.listCollectionItems(collectionId, { limit, offset });
+      const response = await this.listCollectionItems(collectionId, {
+        limit,
+        offset,
+        cmsLocaleId: options.cmsLocaleId,
+      });
       const items = response.items || [];
       allItems.push(...items);
 
@@ -137,4 +188,3 @@ export class WebflowApiClient {
     return allItems;
   }
 }
-
